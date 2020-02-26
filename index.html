@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Democrewcy API</title>
+    <meta name="description" content="API for Democrewcy">
+    <meta name="author" content="Cody Miro Jones">
+
+    <!-- Mobile Specific Metas
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+    <!-- FONT
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&display=swap" rel="stylesheet">
+  
+    <!-- CSS
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href="./static/normalize.css">
+    <link rel="stylesheet" href="./static/skeleton.css">
+    <link rel="stylesheet" href="./static/custom.css">
+</head>
+<body>
+    <div class="container">
+        <section class="header">
+            <h1>Democrewcy API Specifications</h1>
+        </section>
+    </div>
+    
+    <div class="docs-section">
+        <div class="container">
+            <h3>Contents</h3>
+
+            <p>
+                Below find the API specifications for the Democrewcy Backend.
+            </p>
+
+            <ul>
+                <li>
+                    <strong><a href="#unprotected">Unprotected Routes</a></strong>
+                    <ul>
+                        <li><a href="#claimAccount">Claim Account</a></li>
+                        <li><a href="#attribute_schema">Login</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <strong><a href="#protected">Protected Routes</a></strong>
+                    <ul>
+                        <li><a href="#createAppointmentMotion">Create Appointment Motion</a></li>
+                        <li><a href="#createDirectMessage">Create Direct Message</a></li>
+                        <li><a href="#createEvent">Create Event</a></li>
+                        <li><a href="#createMessage">Create Message</a></li>
+                        <li><a href="#createMotion">Create Motion</a></li>
+                        <li><a href="#createPositionMotion">Create Position Motion</a></li>
+                        <li><a href="#createRSVP">Create RSVP</a></li>
+                        <li><a href="#createSubGroup">Create Sub Group</a></li>
+                        <li><a href="#getChannels">Get Channels</a></li>
+                        <li><a href="#getDirectMessages">Get Direct Messages</a></li>
+                        <li><a href="#getMotions">Get Motions</a></li>
+                        <li><a href="#getPositions">Get Positions</a></li>
+                        <li><a href="#getSubGroups">Get Sub Groups</a></li>
+                        <li><a href="#getTopLevelGroups">Get Top Level Groups</a></li>
+                        <li><a href="#voteOnMotion">Vote On Motion </a></li>
+                    </ul>
+                </li>
+                <li>
+                    <strong><a href="#admin">Admin Routes</a></strong>
+                    <ul>
+                        <li><a href="#createAccount">Create Account</a></li>
+                        <li><a href="#createGroup">CreateGroup</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+    <div class="docs-section" id="unprotected">
+        <div class="container">
+            <h4>Unprotected Routes</h4>
+        </div>
+        
+        <div class="container" id="claimAccount">
+            <h5>Claim Account</h5>
+            <p>
+                Used by a user to claim an account that was created by an admin. User gives
+                their email and desired password. Once complete, user should be able to login
+                with their email and password.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/auth/claimAccount</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">None</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    id: id, // User Id
+    email: String,
+    password: String,
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    message: String,
+}</code></pre>
+
+        </div>
+        
+        <div class="container" id="login">
+            <h5>Login</h5>
+            <p>
+                Used to login a user. Returns a session cookie.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/auth/login</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">None</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    email: String,
+    password: String,
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    message : String,
+    accountId : id,
+}</code></pre>
+
+        </div>
+    </div>
+
+    <div class="docs-section" id="protected">
+
+        <div class="container">
+            <h4>Protected Routes</h4>
+        </div>
+        
+        <div class="container" id="createAppointmentMotion">
+            <h5>Create Appointment Motion</h5>
+            <p>
+                Creates an Appointment motion for a given Position Definition, User, and Group.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/createAppointmentMotion</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie for User with Position in the given Group with CreateAppointmentMotion Power</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String, // 'Appointment'
+    proposedBy: id, // id of Position
+    user: id, // id of User being appointed
+    group: id, // id of Group
+    positionDefinition: id, // id of Position Definition
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    className: String, // 'Appointment'
+    id: id, // id of created Appointment
+}</code></pre>
+        </div>
+        
+        <div class="container" id="createDirectMessage">
+            <h5>Create Direct Message</h5>
+            <p>
+                Creats a new Direct Message (Message Board) between the logged the given users.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/createDirectMessage</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String, // 'DirectMessage'
+    users: [id], // Array of Ids of the Users in this DM.
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    className: String, // 'DirectMessage'
+    id: id, // id of created DirectMessage
+}</code></pre>
+        </div>
+        
+        <div class="container" id="createEvent">
+            <h5>Create Event</h5>
+            <p>
+               Creates an event for the given group. All members of the group are considered invited,
+               and can RSVP using the Create RSVP route. 
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/createEvent</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie for User in Position in given Group</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String, // 'Event'
+    name: String,
+    description: String,
+    startTime: Date,
+    endTime: Date,
+    group: id,
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    className: String, // 'Event'
+    id: id, // id of created Event
+}</code></pre>
+        </div>
+        
+        <div class="container" id="createMessage">
+            <h5>Create Message</h5>
+            <p>
+                Sends a message to given Message Board.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/createMessage</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie for User who is part of the given Message Board.</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String, // 'Message'
+    user: id, // id of logged in user.
+    messageBoard: id, // id of message board to post to.
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    className: String, // 'Message'
+    id: id, // id of created Message
+}</code></pre>
+        </div>
+        
+        <div class="container" id="createMotion">
+            <h5>Create Motion</h5>
+            <p>
+                Creates a Motion.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/createMotion</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String, // 'Motion',
+    name: String,
+    text: String,
+    position: id, // id of position proposing the motion.
+    group: id,
+    vote: {
+        className: String, // 'Vote',
+        voteOptions: [id] // Ids of allowed vote options.
+    },
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    className: String, // 'Motion'
+    id: id, // id of created Motion
+}</code></pre>
+        </div>
+        
+        <div class="container" id="createPositionMotion">
+            <h5>Create Position Motion</h5>
+            <p>
+                Creates a Create Position Motion. 
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/createPositionMotion</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie for User with Position in given Group with Create Position power.</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String // 'CreatePosition',
+    name: String,
+    text: String,
+    group: id,
+    proposedBy: id, // id of Position bringing Motion
+    positionDefinition: {
+        className: String, // 'PositionDefinition',
+        name: String,
+        powers: [id], // id of powers for new Position Definition
+    }
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    className: String, // 'CreatePosition',
+    id: id, // id of CreatePosition created.
+}</code></pre>
+        </div>
+        
+        <div class="container" id="createRSVP">
+            <h5>Create RSVP</h5>
+            <p>
+                Creates an RSVP for a user to an Event.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/createRSVP</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie for User who has a Position in the Group for the given Event.</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String, // 'RSVP'
+    attending: Boolean,
+    user: id, 
+    event: id,
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    className: String, // 'RSVP'
+    id: id, // id of RSVP created.
+}</code></pre>
+        </div>
+        
+        <div class="container" id="createSubGroup">
+            <h5>Create Sub Group</h5>
+            <p>
+                Creates a sub group as a child of the given parent Group.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/createSubGroup</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie of User with Position in given parent Group with Create Group power.</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String, // 'Group'
+    name: String,
+    description: String,
+    parentGroup: id // id of parent Group
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    className: String, // 'Group'
+    id: id // id of Group created.
+}</code></pre>
+        </div>
+        
+        <div class="container" id="getChannels">
+            <h5>Get Channels</h5>
+            <p>
+                Gets all Channels for the given User.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/getChannels</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    user: id
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>[
+    {
+        className: String, // 'Channel'
+        id: id,
+        channelable: {
+            className: String, // some subclass of Channelable
+            id: id,
+        },
+        messages: [
+            {
+                className: String, // 'Message'
+                id: id,
+                text: String,
+            },
+        ],
+    },
+]</code></pre>
+        </div>
+        
+        <div class="container" id="getDirectMessages">
+            <h5>Get Direct Messages</h5>
+            <p>
+                Gets the Direct Messages (Message Boards, not the Messages) for the given User.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/getDirectMessages</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    user: id,
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>[
+    {
+        className: String, // 'DirectMessage'
+        id: id,
+        users: [
+            {
+                className: String, // 'User'
+                id: id,
+                firstName: String,
+                lastName: String,
+            },
+        ],
+        messages: [
+            {
+                className: String, // 'Message'
+                id: id,
+                text: String,
+            },
+        ],
+
+    }
+]</code></pre>
+        </div>
+        
+        <div class="container" id="getMotions">
+            <h5>Get Motions</h5>
+            <p>
+                Gets all open Motions for all the Groups that the given User has active Positions in.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/getMotions</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    user: id,
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>[
+    {
+        className: 'Motion',
+        id: id,
+        name: String,
+        text: String,
+        group: {
+            className: String, // 'Group'
+            id: id,
+            name: String,
+        },
+        vote: {
+            className: String, // 'Vote'
+            id: id, 
+            voteOptions: [
+                {
+                    className: String, // 'VoteOption'
+                    id: id,
+                    name: String,
+                    positive: Boolean,
+                    value: Number,
+                },
+            ],
+            individualVotes: [
+                {
+                    className: String, // 'IndividualVote',
+                    id: id,
+                    position: id,
+                    voteOption: 
+                    {
+                        className: String, // 'VoteOption'
+                        id: id,
+                        name: String,
+                        positive: Boolean,
+                        value: Number,
+                    },
+                },
+            ],
+        },
+    }    
+]</code></pre>
+        </div>
+        
+        <div class="container" id="getPositions">
+            <h5>Get Positions</h5>
+            <p>
+                Gets all Positions for the given User.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/getPositions</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    user: id,
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>[
+    {
+        className: String, // 'Position',
+        id: id,
+        user: id,
+        group: {
+            className: String, // 'Group'
+            id: id,
+            name: String,
+        }, 
+        positionDefinition: {
+            className: String, // 'PositionDefinition',
+            id: id,
+            name: String,
+        },
+    },
+]</code></pre>
+        </div>
+        
+        <div class="container" id="getSubGroups">
+            <h5>Get Sub Groups</h5>
+            <p>
+                Gets the child Groups of the given Group.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/getSubGroups</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie for User with a Postion in given Group.</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String, // 'Group',
+    id: id
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>[
+    {
+        className: 'Group',
+        id: id,
+        name: String,
+        description: String,
+        parentGroup: id,
+        positions: [id],
+        childGroups: [
+            {
+                className: String, // 'Group'
+                id: id,
+                name: String,
+            },
+        ],
+    },
+]</code></pre>
+        </div>
+        
+        <div class="container" id="getTopLevelGroups">
+            <h5>Get Top Level Groups</h5>
+            <p>
+                Gets top-level Groups that given User has active Positions in.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/getTopLevelGroups</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    user: id,
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>[
+    {
+        className: String, // 'Group',
+        id: id,
+        name: String,
+        childGroups: [
+            {
+                className: String, // 'Group',
+                id: id,
+                name: String,
+            },
+        ],
+    },
+]</code></pre>
+        </div>
+        
+        <div class="container" id="voteOnMotion">
+            <h5>Vote On Motion</h5>
+            <p>
+                Creates an Individual Vote for the given Position on the given Vote with the given Vote Option.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/voteOnMotion</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie for User with given Position.</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String, // 'IndividualVote'
+    voteOption: id, 
+    vote: id,
+    position: id,
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    className: String, // 'IndividualVote',
+    id: id, // id of IndividualVote created.
+}</code></pre>
+        </div>
+
+    </div>
+    
+    <div class="docs-section" id="admin">
+        <div class="container">
+            <h4>Admin Routes</h4>
+        </div>
+        
+        <div class="container" id="createAccount">
+            <h5>Create Account</h5>
+            <p>
+                Used by an admin to create a new user. The user will have to be claimed using the
+                Claim Account route before first login.
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/admin/createAccount</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie for Admin User</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String // 'User'
+    email: String,
+    password: String,
+    firstName: String,
+    lastName: String,
+    birthDate: Date,
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    message: String,
+}</code></pre>
+        </div>
+        
+        <div class="container" id="createGroup">
+            <h5>Create Group</h5>
+            <p>
+                Used by an admin to create a new group. 
+            </p>
+            <div class="row">
+                <div class="two columns"><strong>URL</strong></div>
+                <div class="ten columns">/admin/createGroup</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Method</strong></div>
+                <div class="ten columns">POST</div>
+            </div>
+            <div class="row">
+                <div class="two columns"><strong>Authorization</strong></div>
+                <div class="ten columns">Valid Session Cookie for Admin User</div>
+            </div>
+            <strong>Request</strong>
+<pre><code>{
+    className: String // 'Group',
+    name: String,
+    description: String,
+    users: [String] // Array of User Ids as strings
+}</code></pre>
+            <strong>Response</strong>
+<pre><code>{
+    message: String,
+}</code></pre>
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>
