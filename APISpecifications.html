@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta charset="utf-8">
-    <title>Democrewcy API</title>
+    <title>Democrewcy Docs</title>
     <meta name="description" content="API for Democrewcy">
     <meta name="author" content="Cody Miro Jones">
 
@@ -169,9 +169,15 @@
             <strong>Request</strong>
 <pre><code>{
     className: String, // 'Appointment'
+    title: String,
+    description: String,
     proposedBy: id, // id of Position
-    user: id, // id of User being appointed
-    group: id, // id of Group
+    group: id,  
+    vote: {
+        className: String, // 'Vote'
+        allowedVoteOptions: [id],
+    }
+    user: id,
     positionDefinition: id, // id of Position Definition
 }</code></pre>
             <strong>Response</strong>
@@ -293,15 +299,15 @@
             </div>
             <strong>Request</strong>
 <pre><code>{
-    className: String, // 'Motion',
-    name: String,
-    text: String,
-    position: id, // id of position proposing the motion.
-    group: id,
+    className: String, // 'Motion'
+    title: String,
+    description: String,
+    proposedBy: id, // id of Position
+    group: id,  
     vote: {
-        className: String, // 'Vote',
-        voteOptions: [id] // Ids of allowed vote options.
-    },
+        className: String, // 'Vote'
+        allowedVoteOptions: [id],
+    }
 }</code></pre>
             <strong>Response</strong>
 <pre><code>{
@@ -329,11 +335,15 @@
             </div>
             <strong>Request</strong>
 <pre><code>{
-    className: String // 'CreatePosition',
-    name: String,
-    text: String,
-    group: id,
-    proposedBy: id, // id of Position bringing Motion
+    className: String, // 'CreatePosition'
+    title: String,
+    description: String,
+    proposedBy: id, // id of Position
+    group: id,  
+    vote: {
+        className: String, // 'Vote'
+        allowedVoteOptions: [id],
+    }
     positionDefinition: {
         className: String, // 'PositionDefinition',
         name: String,
