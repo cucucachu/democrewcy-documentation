@@ -171,8 +171,9 @@
     className: String, // 'Appointment'
     title: String,
     description: String,
-    proposedBy: id, // id of Position
-    group: id,  
+    proposedBy: id,
+    motionContext: id,
+    previousMotion? : id,
     vote: {
         className: String, // 'Vote'
         allowedVoteOptions: [id],
@@ -184,6 +185,7 @@
 <pre><code>{
     className: String, // 'Appointment'
     id: id, // id of created Appointment
+    displayAs: String,
 }</code></pre>
         </div>
         
@@ -207,12 +209,15 @@
             <strong>Request</strong>
 <pre><code>{
     className: String, // 'DirectMessage'
+    name?: String,
+    description?: String,
     users: [id], // Array of Ids of the Users in this DM.
 }</code></pre>
             <strong>Response</strong>
 <pre><code>{
     className: String, // 'DirectMessage'
     id: id, // id of created DirectMessage
+    displayAs: String,
 }</code></pre>
         </div>
         
@@ -238,15 +243,21 @@
 <pre><code>{
     className: String, // 'Event'
     name: String,
-    description: String,
+    description?: String,
     startTime: Date,
     endTime: Date,
     group: id,
+    channel: {
+        className: String, // 'Channel'
+        name?: String,
+        description? : String
+    },
 }</code></pre>
             <strong>Response</strong>
 <pre><code>{
     className: String, // 'Event'
     id: id, // id of created Event
+    displayAs: String,
 }</code></pre>
         </div>
         
@@ -270,6 +281,8 @@
             <strong>Request</strong>
 <pre><code>{
     className: String, // 'Message'
+    body: String,
+    sentAt: Date,
     user: id, // id of logged in user.
     messageBoard: id, // id of message board to post to.
 }</code></pre>
@@ -277,6 +290,7 @@
 <pre><code>{
     className: String, // 'Message'
     id: id, // id of created Message
+    displayAs: String,
 }</code></pre>
         </div>
         
@@ -295,7 +309,7 @@
             </div>
             <div class="row">
                 <div class="two columns"><strong>Authorization</strong></div>
-                <div class="ten columns">Valid Session Cookie</div>
+                <div class="ten columns">Valid Session Cookie for User with Position with create motion Power in given Group</div>
             </div>
             <strong>Request</strong>
 <pre><code>{
@@ -303,7 +317,8 @@
     title: String,
     description: String,
     proposedBy: id, // id of Position
-    group: id,  
+    motionContext: id,
+    previousMotion?: id,
     vote: {
         className: String, // 'Vote'
         allowedVoteOptions: [id],
@@ -313,6 +328,7 @@
 <pre><code>{
     className: String, // 'Motion'
     id: id, // id of created Motion
+    displayAs: String,
 }</code></pre>
         </div>
         
@@ -335,25 +351,29 @@
             </div>
             <strong>Request</strong>
 <pre><code>{
-    className: String, // 'CreatePosition'
+    className: String, // 'Motion'
     title: String,
     description: String,
     proposedBy: id, // id of Position
-    group: id,  
+    motionContext: id,
+    previousMotion?: id,
     vote: {
         className: String, // 'Vote'
         allowedVoteOptions: [id],
     }
     positionDefinition: {
         className: String, // 'PositionDefinition',
-        name: String,
-        powers: [id], // id of powers for new Position Definition
+        title: String,
+        description: String,
+        allowedPositions: Number, 
+        powers?: [id], // id of powers for new Position Definition
     }
 }</code></pre>
             <strong>Response</strong>
 <pre><code>{
     className: String, // 'CreatePosition',
     id: id, // id of CreatePosition created.
+    displayAs: String,
 }</code></pre>
         </div>
         
@@ -378,6 +398,7 @@
 <pre><code>{
     className: String, // 'RSVP'
     attending: Boolean,
+    date: Date,
     user: id, 
     event: id,
 }</code></pre>
@@ -385,6 +406,7 @@
 <pre><code>{
     className: String, // 'RSVP'
     id: id, // id of RSVP created.
+    displayAs: String
 }</code></pre>
         </div>
         
@@ -409,13 +431,20 @@
 <pre><code>{
     className: String, // 'Group'
     name: String,
-    description: String,
-    parentGroup: id // id of parent Group
+    description?: String,
+    superGroup: id // id of parent Group
+    channel: {
+        className: String // 'Channel',
+        name?: String,
+        description?: String,
+    },
+    positionDefinitions: [id],
 }</code></pre>
             <strong>Response</strong>
 <pre><code>{
     className: String, // 'Group'
-    id: id // id of Group created.
+    id: id, // id of Group created.
+    displayAs: String,
 }</code></pre>
         </div>
         
@@ -445,9 +474,13 @@
     {
         className: String, // 'Channel'
         id: id,
+        displayAs: String,
+        name: String,
+        description: String,
         channelable: {
             className: String, // some subclass of Channelable
             id: id,
+            displayAs: String,
         },
         messages: [
             {
@@ -486,19 +519,21 @@
     {
         className: String, // 'DirectMessage'
         id: id,
+        displayAs: String,
+        name: String,
+        description: String,
         users: [
             {
                 className: String, // 'User'
                 id: id,
-                firstName: String,
-                lastName: String,
+                displayAs: String,
             },
         ],
         messages: [
             {
                 className: String, // 'Message'
                 id: id,
-                text: String,
+                displayAs: String,
             },
         ],
 
@@ -532,22 +567,39 @@
     {
         className: 'Motion',
         id: id,
-        name: String,
-        text: String,
-        group: {
-            className: String, // 'Group'
+        displayAs: String,
+        title: String,
+        description: String,
+        proposedBy: {
+            className: String, // 'Position'
             id: id,
-            name: String,
+            displayAs: String,
+        },
+        motionContext: {
+            className: String, // some subClass of MotionContext
+            id: id,
+            displayAs: String,
+        },
+        previousMotion: {
+            className: String, // 'Motion'
+            id: id, 
+            displayAs: String,
+        },
+        nextMotion: {
+            className: String, // 'Motion'
+            id: id, 
+            displayAs: String,
         },
         vote: {
             className: String, // 'Vote'
             id: id, 
-            voteOptions: [
+            displayAs: String,
+            allowedVoteOptions: [
                 {
                     className: String, // 'VoteOption'
                     id: id,
+                    displayAs: String,
                     name: String,
-                    positive: Boolean,
                     value: Number,
                 },
             ],
@@ -555,13 +607,14 @@
                 {
                     className: String, // 'IndividualVote',
                     id: id,
+                    displayAs: String,
                     position: id,
                     voteOption: 
                     {
                         className: String, // 'VoteOption'
                         id: id,
+                        displayAs: String,
                         name: String,
-                        positive: Boolean,
                         value: Number,
                     },
                 },
@@ -597,17 +650,41 @@
     {
         className: String, // 'Position',
         id: id,
-        user: id,
+        displayAs: String,
+        user: {
+            className: String, // 'User'
+            id: id,
+            displayAs: String,
+        },
         group: {
             className: String, // 'Group'
             id: id,
-            name: String,
+            displayAs: String,
         }, 
         positionDefinition: {
             className: String, // 'PositionDefinition',
             id: id,
             name: String,
         },
+        appointment: {
+            className: String, // 'Appointment',
+            id: id,
+            name: String,
+        },
+        individualVotes: [
+            {
+                className: String, // 'IndividualVote',
+                id: id,
+                displayAs: String,
+            },
+        ],
+        motions: [
+            {
+                className: String, // 'Motion',
+                id: id,
+                displayAs: String,
+            },
+        ],
     },
 ]</code></pre>
         </div>
@@ -637,17 +714,42 @@
             <strong>Response</strong>
 <pre><code>[
     {
-        className: 'Group',
+        className: String // 'Group',
         id: id,
+        displayAs: String,
         name: String,
         description: String,
-        parentGroup: id,
-        positions: [id],
+        superGroup: {
+            className: String // 'Group',
+            id: id,
+            displayAs: String,
+        },
+        events: [
+            {
+                className: String // 'Event',
+                id: id,
+                displayAs: String,
+            },
+        ],
+        positions: [
+            {
+                className: String // 'Position',
+                id: id,
+                displayAs: String,
+            },
+        ],
+        positionDefinitions: [
+            {
+                className: String // 'PositionDefinition',
+                id: id,
+                displayAs: String,
+            },
+        ],
         childGroups: [
             {
-                className: String, // 'Group'
+                className: String // 'Group',
                 id: id,
-                name: String,
+                displayAs: String,
             },
         ],
     },
@@ -678,14 +780,42 @@
             <strong>Response</strong>
 <pre><code>[
     {
-        className: String, // 'Group',
+        className: String // 'Group',
         id: id,
+        displayAs: String,
         name: String,
+        description: String,
+        superGroup: {
+            className: String // 'Group',
+            id: id,
+            displayAs: String,
+        },
+        events: [
+            {
+                className: String // 'Event',
+                id: id,
+                displayAs: String,
+            },
+        ],
+        positions: [
+            {
+                className: String // 'Position',
+                id: id,
+                displayAs: String,
+            },
+        ],
+        positionDefinitions: [
+            {
+                className: String // 'PositionDefinition',
+                id: id,
+                displayAs: String,
+            },
+        ],
         childGroups: [
             {
-                className: String, // 'Group',
+                className: String // 'Group',
                 id: id,
-                name: String,
+                displayAs: String,
             },
         ],
     },
@@ -720,6 +850,7 @@
 <pre><code>{
     className: String, // 'IndividualVote',
     id: id, // id of IndividualVote created.
+    displayAs: String,
 }</code></pre>
         </div>
 
